@@ -1,0 +1,73 @@
+import { prisma } from "../prisma/Client"; //importando conexão com o banco de dados
+import bcrypt from "bcrypt"; //importando biblioteca para criptografar a senha
+
+
+// Serviço para criar um novo usuário
+export class UsuarioService {
+    async cadastrar(data:{
+        nome: string; 
+        cpf: string; 
+        email:string; 
+        senha: string; 
+        telefone: string
+    }) {
+
+        // Validação básica
+        if(!data.nome || !data.cpf || !data.email || !data.senha || !data.telefone) {
+            throw new Error("Campos obrigatórios não preenchidos");
+        }
+
+        if(data.senha.length < 6) {
+            throw new Error("A senha deve conter pelo menos 6 caracteres");
+        }
+
+
+        // primeira regra: verificar se o email ou CPF já existe
+        const usuarioExistente = await prisma.usuario.findFirst({
+            where: {
+                OR:[
+                    {email: data.email},
+                    {cpf: data.cpf}
+                ]
+            }
+        });
+
+        if (usuarioExistente){
+            if(usuarioExistente.email === data.email) {
+                throw new Error("Email já cadastrado");
+            }
+
+            if(usuarioExistente.cpf === data.cpf) {
+                throw new Error("CPF já cadastrado");
+            }
+        }
+
+        // criptografar a senha
+        const senhaHash = await bcrypt.hash(data.senha, 10);
+
+        //gerar codigo
+        const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+        const expira = new Date(Date.now() + 10 * 60 * 1000); // expira em 15 minutos
+
+        // salvar no banco de dados
+        const usuario = await prisma.usuario.create({
+            data: {
+                nome: data.nome,
+                cpf: data.cpf,
+                email: data.email,
+                senha_hash: senhaHash,
+                tel_user: data.telefone,
+                ativo: false,
+                codigo,
+                codigoExpiraEm: expira
+            }
+        });
+
+        console.log("Código:", codigo) //teste
+
+        return{
+            message:"Usuario criado. verifique o codigo",
+            user_id: usuario.user_id
+        };
+    }
+}
