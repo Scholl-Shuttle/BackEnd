@@ -1,4 +1,4 @@
-import { th } from "zod/locales";
+
 import { prisma } from "../prisma/Client";
 
 export class ConfirmacaoService{
