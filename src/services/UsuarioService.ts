@@ -1,9 +1,11 @@
 import { prisma } from "../prisma/Client"; //importando conexão com o banco de dados
 import bcrypt from "bcrypt"; //importando biblioteca para criptografar a senha
-
+import { EmailService } from "./EmailService"; //importando serviço de email
 
 // Serviço para criar um novo usuário
 export class UsuarioService {
+    private emailService = new EmailService();
+
     async cadastrar(data:{
         nome: string; 
         cpf: string; 
@@ -49,6 +51,8 @@ export class UsuarioService {
         const codigo = Math.floor(100000 + Math.random() * 900000).toString();
         const expira = new Date(Date.now() + 10 * 60 * 1000); // expira em 15 minutos
 
+        
+
         // salvar no banco de dados
         const usuario = await prisma.usuario.create({
             data: {
@@ -62,6 +66,20 @@ export class UsuarioService {
                 codigoExpiraEm: expira
             }
         });
+
+
+        try{
+            await this.emailService.enviarCodigo(
+                data.email, 
+                codigo, 
+                data.nome
+            );
+        } catch{
+            throw new Error(
+                "Usuário criado, mas falha ao enviar email de verificação."
+            )
+        }
+        
 
         console.log("Código:", codigo) //teste
 
