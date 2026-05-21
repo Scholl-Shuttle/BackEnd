@@ -3,6 +3,7 @@ import {UsuarioController} from "../controllers/UsuarioController"; // importand
 import { UsuarioService } from"../services/UsuarioService";
 import { ConfirmacaoService } from "../services/CofirmacaoService";
 import { ReenviarCodigoService } from "../services/ReenviarCodigo";
+import { LoginService } from "../services/LoginService";
 
 const router = Router(); //criando uma instancia do Router, ou seja, um organizador de rotas
 
@@ -10,6 +11,7 @@ const usuarioController = new UsuarioController(); //criando uma instancia da cl
 const usuarioService = new UsuarioService();
 const confirmacaoService = new ConfirmacaoService();
 const reenviarCodigoService = new ReenviarCodigoService();
+const loginService = new LoginService();
 
 //cadastro
 router.post("/cadastro", async (req, res) => {
@@ -40,6 +42,20 @@ router.post("/reenviar", async(req, res) =>{
         const result = await reenviarCodigoService.reenviar(
             req.body
         );
+        return res.json(result);
+    } catch(error:any){
+        return res.status(400).json({error: error.message});
+    }
+});
+
+// login
+router.post("/login", async(req, res) => {
+    try{
+        const {identificador, senha} = req.body;
+        const result = await loginService.login({
+            identificador,
+            senha
+        });
         return res.json(result);
     } catch(error:any){
         return res.status(400).json({error: error.message});

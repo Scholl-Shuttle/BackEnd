@@ -4,15 +4,15 @@ import jwt from "jsonwebtoken";
 
 
 export class LoginService {
-    async login(
+    async login(data: {
         identificador: string, //pode ser email ou cpf
         senha: string
-    ){
+    }){
         const usuario = await prisma.usuario.findFirst({
             where: {
                 OR:[
-                    {email: identificador},
-                    {cpf: identificador}
+                    {email: data.identificador},
+                    {cpf: data.identificador}
                 ]
             }
         });
@@ -21,7 +21,7 @@ export class LoginService {
             throw new Error("Usuário não encontrado");
         }
 
-        const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
+        const senhaValida = await bcrypt.compare(data.senha, usuario.senha_hash);
 
         if(!senhaValida){
             throw new Error("Senha inválida");
@@ -35,7 +35,7 @@ export class LoginService {
             id: usuario.user_id,
             email: usuario.email
             },
-            "segredo", // trocar por .env
+            process.env.JWT_SECRET as string,
             {
                 expiresIn: "1h"
             }
