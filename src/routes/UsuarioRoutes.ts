@@ -30,9 +30,15 @@ router.post("/cadastro", async (req, res) => {
 
 router.post("/confirmar", async(req, res) => {
     try{
-        const result = await confirmacaoService.confirmar(
-            req.body
-        );
+        console.log(req.body);
+        const{
+            email,
+            codigo
+        } = req.body;
+        const result = await confirmacaoService.confirmar({
+            email,
+            codigo
+        });
         return res.json(result);
     } catch(error:any){
         return res.status(400).json({error: error.message});
@@ -90,7 +96,15 @@ router.post("/recuperarSenha", async(req, res) => {
 
 router.post("/redefinirSenha", async(req, res) => {
     try{
-        const result = await recuperaSenhaService.redefinirSenha(req.body);
+        const{
+            email,
+            code,
+            newPassword
+        } = req.body;
+        const result = await recuperaSenhaService.redefinirSenha({
+            email, 
+            codigo: code, 
+            novaSenha: newPassword});
         return res.json(result);
     }catch(error:any){
         return res.status(400).json({error: error.message});

@@ -52,13 +52,13 @@ export class LoginService {
             }
         );
         return {
-            usuario:{
+            user:{
                 id: usuario.user_id,
                 nome: usuario.nome,
                 email: usuario.email,
             },
             tipo,
-            token
+            accessToken:token
         };
     }
 }

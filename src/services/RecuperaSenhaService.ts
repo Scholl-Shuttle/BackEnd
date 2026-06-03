@@ -32,7 +32,8 @@ export class RecuperaSenhaService {
             },
             data:{
                 codigo: codigo,
-                codigoExpiraEm: expira
+                codigoExpiraEm: expira,
+                tipoCodigo: "recuperacao"
             }
         });
 
@@ -61,6 +62,10 @@ export class RecuperaSenhaService {
             throw new Error("Usuário não encontrado");
         }
 
+        if(usuario.tipoCodigo !== "recuperacao"){
+            throw new Error("Código de recuperação inválido");
+        }
+
         if(usuario.codigo !== data.codigo){
             throw new Error("Código de recuperação inválido");
         }
@@ -83,7 +88,8 @@ export class RecuperaSenhaService {
             data: {
                 senha_hash: senhaHash,
                 codigo: null,
-                codigoExpiraEm: null
+                codigoExpiraEm: null,
+                tipoCodigo: null
             } 
         });
 

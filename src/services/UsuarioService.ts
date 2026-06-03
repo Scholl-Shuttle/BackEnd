@@ -10,16 +10,16 @@ export class UsuarioService {
         nome: string; 
         cpf: string; 
         email:string; 
-        senha_hash: string; 
-        tel_user: string
+        senha: string; 
+        telefone: string
     }) {
 
         // Validação básica
-        if(!data.nome || !data.cpf || !data.email || !data.senha_hash || !data.tel_user) {
+        if(!data.nome || !data.cpf || !data.email || !data.senha || !data.telefone) {
             throw new Error("Campos obrigatórios não preenchidos");
         }
 
-        if(data.senha_hash.length < 6) {
+        if(data.senha.length < 6) {
             throw new Error("A senha deve conter pelo menos 6 caracteres");
         }
 
@@ -45,7 +45,7 @@ export class UsuarioService {
         }
 
         // criptografar a senha
-        const senhaHash = await bcrypt.hash(data.senha_hash, 10);
+        const senhaHash = await bcrypt.hash(data.senha, 10);
 
         //gerar codigo
         const codigo = Math.floor(100000 + Math.random() * 900000).toString();
@@ -60,10 +60,11 @@ export class UsuarioService {
                 cpf: data.cpf,
                 email: data.email,
                 senha_hash: senhaHash,
-                tel_user: data.tel_user,
+                tel_user: data.telefone,
                 ativo: false,
                 codigo,
-                codigoExpiraEm: expira
+                codigoExpiraEm: expira,
+                tipoCodigo: "ativacao"
             }
         });
 

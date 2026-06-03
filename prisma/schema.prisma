@@ -17,6 +17,7 @@ model Usuario {
   ativo                               Boolean?            @default(false)
   codigo                              String?             @db.VarChar(10)
   codigoExpiraEm                      DateTime?           @db.Timestamp(6)
+  tipoCodigo                          String?             @db.VarChar(255)
   created_at                          DateTime?           @default(now()) @db.Timestamp(6)
   updated_at                          DateTime?           @updatedAt
   chat_chat_destinatario_idTousuarios chat[]              @relation("chat_destinatario_idTousuarios")
